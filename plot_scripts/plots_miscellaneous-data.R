@@ -8,6 +8,29 @@ dir.create("plots")
 ##### MISCELLANEOUS DATA #####
 ##############################
 
+### CONTAGIOUS DATA
+# Contagious: 
+cont <- read_csv("data-misc/data-contagious/RIVM_NL_contagious_estimate.csv")
+
+cont2 <- spread(cont, Type, Waarde)
+
+cont2 %>%
+  ggplot(aes(x= Datum, y = `Geschat aantal besmettelijke mensen`)) +
+  geom_line(aes(y = `Geschat aantal besmettelijke mensen`)) +
+  geom_ribbon(aes(ymin = `Minimum aantal besmettelijke mensen`, ymax = `Maximum aantal besmettelijke mensen`), fill="#E69F00", alpha=.5) +
+  scale_y_continuous(limits=c(0, NA)) +
+  theme_minimal() +
+  theme(axis.title.x=element_blank(),
+        axis.title.y=element_blank(),
+        legend.pos = "bottom",
+        legend.title = element_blank(),
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle=element_text(size=11, hjust=0.5),
+        legend.text = element_text(size = 9)) +
+  ggtitle("Geschatte besmettelijke mensen per dag") +
+  ggsave("plots/contagious.png", width = 5.5, height=4)
+
+
 ### TEST DATA
 # Tests: Toename per kalender week (einde van de week (zondag) als plotdatum)
 test <- read_csv("data-misc/data-test/RIVM_NL_test_latest.csv")
@@ -26,6 +49,7 @@ test %>%
   scale_color_manual(values=c("#E69F00", "#56B4E9", "#999999")) +
   scale_y_continuous(limits=c(0, NA)) +
   ggtitle("Toename totaal (positieve) COVID-19 testen per week") +
+  labs(caption = paste('N.B. Data van week ', as.character(tail(test['Week'], 1)), " wordt nog aangevuld." , sep = ""))
   ggsave("plots/overview_plot_tests_weeks.png", width = 5.5, height=4)
   
 # Tests: Cumulatief per kalender week (einde van de week (zondag) als plotdatum)
@@ -51,46 +75,46 @@ test %>%
   ggsave("plots/overview_plot_tests_weeks_cum.png", width = 5.5, height=4)
 
 # Tests: oude data (tm 19 april) totaal (positive) tests
-read_csv("data/rivm_NL_covid19_tests.csv") %>%
-  group_by(Datum, Type) %>%
-  summarise(Aantal = max(Aantal)) %>%
-  mutate(
-    Type = if_else(Type == "Totaal", "Totaal testen", "Positieve testen")
-  ) %>%
-  ggplot(aes(x = Datum, y = Aantal, colour = Type)) +
-  geom_line() +
-  theme_minimal() +
-  theme(axis.title.x=element_blank(),
-        axis.title.y=element_blank(),
-        legend.pos = "bottom",
-        legend.title = element_blank()) +
-  scale_color_manual(values=c("#E69F00", "#56B4E9", "#999999")) +
-  scale_y_continuous(limits=c(0, NA)) +
-  ggtitle("Totaal (positieve) COVID-19 testen") +
-  ggsave("plots/overview_plot_tests.png", width = 5.5, height=4)
+# read_csv("data/rivm_NL_covid19_tests.csv") %>%
+#   group_by(Datum, Type) %>%
+#   summarise(Aantal = max(Aantal)) %>%
+#   mutate(
+#     Type = if_else(Type == "Totaal", "Totaal testen", "Positieve testen")
+#   ) %>%
+#   ggplot(aes(x = Datum, y = Aantal, colour = Type)) +
+#   geom_line() +
+#   theme_minimal() +
+#   theme(axis.title.x=element_blank(),
+#         axis.title.y=element_blank(),
+#         legend.pos = "bottom",
+#         legend.title = element_blank()) +
+#   scale_color_manual(values=c("#E69F00", "#56B4E9", "#999999")) +
+#   scale_y_continuous(limits=c(0, NA)) +
+#   ggtitle("Totaal (positieve) COVID-19 testen") +
+#   ggsave("plots/overview_plot_tests.png", width = 5.5, height=4)
 
 # Tests: oude data (tm 19 april) toename (positieve) testen
-read_csv("data/rivm_NL_covid19_tests.csv") %>%
-  group_by(Datum, Type) %>%
-  summarise(Aantal = max(Aantal)) %>%
-  ungroup() %>%
-  pivot_wider(names_from = Type, values_from = Aantal) %>%
-  mutate(
-    `Positieve testen` = Positief - lag(Positief),
-    `Totaal testen` = Totaal - lag(Totaal),
-  ) %>%
-  pivot_longer(c("Totaal testen", "Positieve testen"), names_to = "Type", values_to="Aantal", values_drop_na=T) %>%
-  ggplot(aes(x = Datum, y = Aantal, colour = Type)) +
-  geom_line() +
-  scale_y_continuous(limits=c(0, NA)) +
-  theme_minimal() +
-  theme(axis.title.x=element_blank(),
-        axis.title.y=element_blank(),
-        legend.pos = "bottom",
-        legend.title = element_blank()) +
-  scale_color_manual(values=c("#E69F00", "#56B4E9", "#999999")) +
-  ggtitle("Toename (positieve) COVID-19 testen") +
-  ggsave("plots/overview_plot_tests_diff.png", width = 5.5, height=4)
+# read_csv("data/rivm_NL_covid19_tests.csv") %>%
+#   group_by(Datum, Type) %>%
+#   summarise(Aantal = max(Aantal)) %>%
+#   ungroup() %>%
+#   pivot_wider(names_from = Type, values_from = Aantal) %>%
+#   mutate(
+#     `Positieve testen` = Positief - lag(Positief),
+#     `Totaal testen` = Totaal - lag(Totaal),
+#   ) %>%
+#   pivot_longer(c("Totaal testen", "Positieve testen"), names_to = "Type", values_to="Aantal", values_drop_na=T) %>%
+#   ggplot(aes(x = Datum, y = Aantal, colour = Type)) +
+#   geom_line() +
+#   scale_y_continuous(limits=c(0, NA)) +
+#   theme_minimal() +
+#   theme(axis.title.x=element_blank(),
+#         axis.title.y=element_blank(),
+#         legend.pos = "bottom",
+#         legend.title = element_blank()) +
+#   scale_color_manual(values=c("#E69F00", "#56B4E9", "#999999")) +
+#   ggtitle("Toename (positieve) COVID-19 testen") +
+#   ggsave("plots/overview_plot_tests_diff.png", width = 5.5, height=4)
 
 
 ### UNDERLYING CONDITIONS 
@@ -101,7 +125,7 @@ con$Type[which(con$Type == "Chronische neurologische of neuromusculaire aandoeni
 
 con %>%
   filter(Type != "Overig") %>%
-  mutate(Type = factor(Type, c("Cardio-vasculair en hypertensie", "Diabetes", "Chronische longaandoeningen", "Maligniteit", "Chronisch neurologisch/neuromusculair", "Nieraandoening", "Leveraandoening", "Immuundeficientie", "Zwangerschap", "Postpartum"))) %>%
+  #mutate(Type = factor(Type, c("Cardio-vasculair en hypertensie", "Diabetes", "Chronische longaandoeningen", "Maligniteit", "Chronisch neurologisch/neuromusculair", "Nieraandoening", "Leveraandoening", "Immuundeficientie", "Zwangerschap", "Postpartum"))) %>%
   ggplot(aes(x = Datum, y = AantalCumulatief, colour = Type)) +
   geom_line() +
   scale_y_continuous(limits=c(0, NA)) +
@@ -188,3 +212,4 @@ read_csv("data-misc/data-nursery/RIVM_NL_nursery_counts.csv") %>%
   scale_y_continuous(limits=c(0, NA)) +
   ggtitle("Totaal (overleden) positief geteste verpleegtehuis bewoners") +
   ggsave("plots/overview_nursery_cumulative.png", width = 5.5, height=4)
+
