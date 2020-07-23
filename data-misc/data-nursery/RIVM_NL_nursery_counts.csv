@@ -289,5 +289,7 @@ Datum,Type,Aantal,AantalCumulatief
 2020-07-19,Overleden besmette bewoners,1.0,2843.0
 2020-07-20,Positief geteste bewoners,0.0,8404.0
 2020-07-20,Overleden besmette bewoners,0.0,2843.0
-2020-07-21,Positief geteste bewoners,2.0,8406.0
+2020-07-21,Positief geteste bewoners,3.0,8407.0
 2020-07-21,Overleden besmette bewoners,0.0,2843.0
+2020-07-22,Positief geteste bewoners,3.0,8410.0
+2020-07-22,Overleden besmette bewoners,0.0,2843.0
